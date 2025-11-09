@@ -1,0 +1,85 @@
+#mainCardContainer {
+  display: flex;
+  width: 50vw;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  letter-spacing: -1px;
+}
+
+.receiptCard {
+  width: 500px;
+  height: 500px;
+  font-size: 15px;
+  text-align: center;
+  font-family: "Courier Prime", "Inter", sans-serif !important;
+  margin: 10px;
+}
+
+#receiptTitle {
+  text-align: left;
+}
+
+#receiptFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#receiptTextContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#receiptTextContentLeft {
+  text-align: left;
+  font-weight: 800;
+}
+
+#receiptTextContentRight {
+  text-align: right;
+  font-weight: 200;
+}
+
+#receiptImageTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "Inter", sans-serif !important;
+}
+
+#receiptDownloadMenu {
+  margin-top: 10px;
+  float: right;
+}
+
+#receiptDownloadMenu:hover {
+  cursor: pointer;
+}
+
+th {
+  text-align: left;
+  width: 40%;
+  vertical-align: top;
+}
+
+td {
+  text-align: left;
+  width: 60%;
+  vertical-align: top;
+  padding-bottom: 10px;
+}
+
+tr {
+  line-height: 1;
+}
+
+table {
+  border-bottom: 1px solid lightgray;
+}
+
+#receiptImageContainer {
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}

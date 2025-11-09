@@ -1,0 +1,26 @@
+.tableHead {
+  font-weight: bold;
+  text-align: left;
+}
+
+.tableCell {
+  width: 20%;
+  text-align: left;
+}
+
+#receiptTableContainer {
+  margin: 0 auto;
+  width: 50%;
+}
+
+#viewButton {
+  margin: 5px;
+}
+
+#optionsButton:hover {
+  cursor: pointer;
+}
+
+#viewButton:hover {
+  cursor: pointer;
+}

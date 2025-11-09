@@ -1,0 +1,27 @@
+h1 {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 20px;
+}
+
+#mainContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 5em;
+  margin-top: 10vh;
+}
+
+#buttonContainer {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1em;
+  justify-content: center;
+}

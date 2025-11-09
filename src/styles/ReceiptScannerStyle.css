@@ -1,0 +1,8 @@
+/* Make scanner take 70% of the viewport height.
+   Using `vh` avoids the common percent-height pitfall where
+   percentage heights require parent elements to have explicit heights. */
+#scannerContainer {
+  height: 90vh;
+  margin: 0 auto;
+  background-color: red;
+}

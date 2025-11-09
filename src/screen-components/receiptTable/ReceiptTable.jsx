@@ -1,0 +1,138 @@
+import React, { use, useEffect, useState } from "react";
+import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table"
+
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import { Button } from "@/components/ui/button"
+import "./ReceiptTable.css"
+import { useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { refreshAccessToken } from "../../service/authService";
+import { setAccessToken, setUserAuthenticated } from "../../redux/slices/userSlice";
+import { toast } from "sonner";
+
+const ReceiptTable = () => {
+
+    const [receiptList, setReceiptList] = useState([]);
+    const user = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    useEffect(() => {
+        async function fetchReceipts() {
+            try {
+                const response = await axios.get('http://localhost:8080/api/receipt/view', { headers: { Authorization: `Bearer ${user.accessToken}` } });
+                setReceiptList(response.data);
+            } catch (error) {
+                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                    try {
+                        console.log("Refreshing token...");
+                        const token = await refreshAccessToken();
+                        if (token !== null) {
+                            dispatch(setUserAuthenticated(true));
+                            dispatch(setAccessToken(token));
+                            console.log("Token refreshed: " + token);
+                        } else {
+                            dispatch(setUserAuthenticated(false));
+                        }
+                        if (user.isAuthenticated) {
+                            try {
+                                console.log("token in user:" + user.accessToken);
+                                const response = await axios.get('http://localhost:8080/api/receipt/view', { headers: { Authorization: `Bearer ${token}` } });
+                                setReceiptList(response.data);
+                                toast.success("Upload Successful after token refresh");
+                            } catch (error) {
+                                console.error("Upload failed after token refresh:", error);
+                                toast.error("An Error occurred during upload after token refresh");
+                            }
+                        } else {
+                            toast.error("Token refresh failed. Please log in again.");
+                        }
+                    } catch (error) {
+                        console.error("Upload failed after token refresh:", error);
+                        toast.error("An Error occurred during upload after token refresh");
+                    }
+                }
+            }
+        }
+        fetchReceipts();
+    }, []);
+
+
+    const navigate = useNavigate();
+    const [selectedReceiptsYear, setSelectedReceiptsYear] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('');
+
+    const onViewReceipt = (receipt) => {
+        navigate(`/receipt/${receipt.id}`);
+    }
+
+    useEffect(() => {
+        console.log("Selected Year changed:", selectedYear);
+        console.log("Receipt List:", receiptList);
+        const filteredReceipts = receiptList.filter(receipt => new Date(receipt.transactionDate).getFullYear() === Number(selectedYear));
+        console.log("Filtered Receipts:", filteredReceipts);
+        setSelectedReceiptsYear(filteredReceipts);
+    }, [selectedYear]);
+
+    return (
+        <div id="receiptTableContainer">
+
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="outline" style={{ margin: '10px' }}>{selectedYear || "Choose A Year"}</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => setSelectedYear("2021")}>2021</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedYear("2022")}>2022</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedYear("2023")}>2023</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedYear("2024")}>2024</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedYear("2025")}>2025</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Table className="receiptTable">
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="tableHead">Invoice</TableHead>
+                        <TableHead className="tableHead">Date Of Transaction</TableHead>
+                        <DropdownMenu id="optionsButton" className="tableCell">
+                            <DropdownMenuTrigger><FontAwesomeIcon icon={faEllipsis} /></DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem>Download All Receipts</DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </TableRow>
+
+                </TableHeader>
+                <TableBody>
+                    {selectedReceiptsYear.map((receipt, index) => (
+                        <TableRow>
+                            <TableCell className="tableCell">{receipt.name}</TableCell>
+                            <TableCell className="tableCell">{receipt.transactionDate}</TableCell>
+                            <Button id="viewButton" onClick={() => onViewReceipt(receipt)}>View</Button>
+                        </TableRow>
+                    ))}
+
+                </TableBody>
+            </Table>
+        </div>
+    );
+}
+export default ReceiptTable;

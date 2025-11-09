@@ -1,0 +1,16 @@
+/* Navbar.css */
+#navbarContainer {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.5rem 1rem;
+}
+
+#navbarTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+#navbarTitle:hover {
+  cursor: pointer;
+}

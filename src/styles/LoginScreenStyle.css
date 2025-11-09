@@ -1,0 +1,15 @@
+#loginCard {
+  margin: 5vh auto;
+  padding: 2rem;
+  width: 70vw;
+}
+
+#fieldContainer {
+  width: 100%;
+}
+
+.loginFooter {
+  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+}

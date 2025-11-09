@@ -1,0 +1,48 @@
+#cameraContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  height: 100vh;
+  padding: 5px;
+  width: 100%;
+}
+
+#camera {
+  border-radius: 10px;
+}
+
+#test {
+  background-color: red;
+}
+
+#dialogContainer {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  gap: 10px;
+}
+
+.capture-button {
+  border-radius: 10px;
+  padding: 5px;
+  border: 1px solid gray;
+}
+
+#buttonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#cameraDialogContainer {
+  margin: 0 auto;
+}
+
+#loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

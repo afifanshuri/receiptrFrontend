@@ -73,7 +73,7 @@ const RegisterScreen = () => {
                     </FieldSet>
                 </CardContent>
                 <CardFooter className="loginFooter">
-                    <Button id="loginButton" onClick={() => { handleLogin() }}>Log In</Button>
+                    <Button id="loginButton" onClick={() => { handleLogin() }}>Register</Button>
                 </CardFooter>
             </Card>
         </div>

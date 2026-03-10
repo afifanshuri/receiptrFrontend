@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Table,
     TableBody,
@@ -96,14 +96,14 @@ const ReceiptTable = () => {
 
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                    <Button variant="outline" style={{ margin: '10px' }}>{selectedYear || "Choose A Year"}</Button>
+                    <Button className="clickableButton" variant="outline" style={{ margin: '10px' }}>{selectedYear || "Choose A Year"}</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setSelectedYear("2021")}>2021</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedYear("2022")}>2022</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedYear("2023")}>2023</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedYear("2024")}>2024</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setSelectedYear("2025")}>2025</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2021")}>2021</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2022")}>2022</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2023")}>2023</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2024")}>2024</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2025")}>2025</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -112,7 +112,7 @@ const ReceiptTable = () => {
                     <TableRow>
                         <TableHead className="tableHead">Invoice</TableHead>
                         <TableHead className="tableHead">Date Of Transaction</TableHead>
-                        <DropdownMenu id="optionsButton" className="tableCell">
+                        <DropdownMenu id="optionsButton" className="tableCell clickableButton">
                             <DropdownMenuTrigger><FontAwesomeIcon icon={faEllipsis} /></DropdownMenuTrigger>
                             <DropdownMenuContent>
                                 <DropdownMenuItem>Download All Receipts</DropdownMenuItem>

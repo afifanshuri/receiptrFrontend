@@ -12,16 +12,18 @@ h3 {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  width: 100%;
   gap: 5em;
-  margin-top: 10vh;
+  padding: 5%;
 }
 
-#buttonContainer {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1em;
-  justify-content: center;
+@media (max-width: 768px) {
+  #mainContainer {
+    flex-direction: column;
+  }
+}
+
+#titleContainer {
+}
+
+#graphicContainer {
 }

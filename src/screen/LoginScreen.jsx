@@ -68,7 +68,7 @@ const LoginScreen = () => {
                     </FieldSet>
                 </CardContent>
                 <CardFooter className="loginFooter">
-                    <Button id="loginButton" onClick={() => { handleLogin() }}>Log In</Button>
+                    <Button className="clickableButton" id="loginButton" onClick={() => { handleLogin() }}>Log In</Button>
                 </CardFooter>
             </Card>
         </div>

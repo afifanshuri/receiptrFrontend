@@ -18,7 +18,7 @@ function App() {
         <PersistGate loading={null} persistor={persistor}>
           <Navbar />
           <AppRoutes />
-          <Toaster richColors position="top-center" />
+          <Toaster richColors position="bottom-right" />
         </PersistGate>
       </Provider>
     </>

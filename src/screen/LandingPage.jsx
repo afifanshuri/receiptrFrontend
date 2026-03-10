@@ -1,16 +1,6 @@
 import React from "react";
 import '../styles/LandingPageStyle.css'
 import graphic2 from "../assets/images/main_graphic3.png";
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "../components/ui/sheet"
-import { Button } from "../components/ui/button"
-import AutoCarousel from "../screen-components/autoCarousel/AutoCarousel";
 
 const LandingPage = () => {
     const OPTIONS = { loop: true };
@@ -26,7 +16,6 @@ const LandingPage = () => {
                     <h3>Just simply snap and store. All your tax documents in one place.</h3>
                 </div>
                 <div id="graphicContainer">
-                    {/*<AutoCarousel slides={SLIDES} options={OPTIONS} />*/}
                     <img src={graphic2}></img>
                 </div>
             </div>

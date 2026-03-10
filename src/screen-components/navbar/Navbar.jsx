@@ -3,12 +3,10 @@ import React from "react";
 import {
     NavigationMenu,
     NavigationMenuContent,
-    NavigationMenuIndicator,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 
 import './Navbar.css';
@@ -45,29 +43,31 @@ const Navbar = () => {
 
     return (
         <div id="navbarContainer">
-            <h1 id="navbarTitle" onClick={() => redirectToMainPage()}>receiptr.</h1>
+            <h1 className="clickableButton" id="navbarTitle" onClick={() => redirectToMainPage()}>receiptr.</h1>
             <NavigationMenu>
                 <NavigationMenuList>
+                    {!isUserAuthenticated &&
+                        <NavigationMenuItem>
+                            <NavigationMenuTrigger className="clickableButton">Features</NavigationMenuTrigger>
+                            <NavigationMenuContent className="navbarItems">
+                                <NavigationMenuLink className="navLink clickableButton">Receipts Dashboard</NavigationMenuLink>
+                                <NavigationMenuLink className="navLink clickableButton">Receipts Statistics</NavigationMenuLink>
+                            </NavigationMenuContent>
+                        </NavigationMenuItem>
+                    }
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>Features</NavigationMenuTrigger>
-                        <NavigationMenuContent className="navbarItems">
-                            <NavigationMenuLink className="navLink">Receipts Dashboard</NavigationMenuLink>
-                            <NavigationMenuLink className="navLink">Receipts Statistics</NavigationMenuLink>
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger>Account</NavigationMenuTrigger>
+                        <NavigationMenuTrigger className="clickableButton">Account</NavigationMenuTrigger>
                         <NavigationMenuContent className="navbarItems">
                             {isUserAuthenticated &&
                                 <div>
-                                    <NavigationMenuLink className="navLink" onClick={() => onHandleLogOut()}>Log Out</NavigationMenuLink>
+                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => onHandleLogOut()}>Log Out</NavigationMenuLink>
                                 </div>
                             }
                             {
                                 !isUserAuthenticated &&
                                 <div>
-                                    <NavigationMenuLink className="navLink" onClick={() => nav("/login")}>Log In</NavigationMenuLink>
-                                    <NavigationMenuLink className="navLink" onClick={() => nav("/register")}>Register</NavigationMenuLink>
+                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => nav("/login")}>Log In</NavigationMenuLink>
+                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => nav("/register")}>Register</NavigationMenuLink>
                                 </div>
                             }
                         </NavigationMenuContent>

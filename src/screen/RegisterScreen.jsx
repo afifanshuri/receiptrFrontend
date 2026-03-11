@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card"
 
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner";
 
 const RegisterScreen = () => {
     const nav = useNavigate();
@@ -34,10 +35,15 @@ const RegisterScreen = () => {
             lastName: lname,
             phoneNumber: phone
         }).then(response => {
-            console.log("Registration successful:", response.data);
-            nav("/login");
+            if (response.data.statusCode === "DUPLICATE") {
+                toast.error("Email already exists. Please use a different email.");
+            } else {
+                console.log("Registration successful:", response.data);
+                nav("/login");
+            }
         }).catch(error => {
             console.error("There was an error during registration!", error);
+            toast.error("Registration failed. Please try again.");
         });
     }
 

@@ -12,6 +12,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+
 import "./ReceiptDisplay.css"
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -22,6 +32,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { refreshAccessToken } from "../../service/authService";
 import { setAccessToken, setUserAuthenticated } from "../../redux/slices/userSlice";
+import { Button } from "../../components/ui/button";
 
 const ReceiptDisplay = () => {
     const [receipt, setReceipt] = useState(null);
@@ -126,6 +137,10 @@ const ReceiptDisplay = () => {
                     </CardContent>
                     <CardFooter id="receiptFooter">
                         <h2 id="totalAmount" style={{ textAlign: 'right', fontWeight: '800', fontSize: '23px' }}>TOTAL: RM{receipt.receiptAmount}</h2>
+                        <div>
+                            <Button className="clickableButton" variant="outline" style={{ marginRight: '10px' }}>Display Original</Button>
+                            <Button className="clickableButton" variant="outline">Display Scanned</Button>
+                        </div>
                     </CardFooter>
                 </Card>
                 <Card className="receiptCard">
@@ -142,7 +157,7 @@ const ReceiptDisplay = () => {
                         </CardTitle>
                     </CardHeader>
                     <CardContent id="receiptImageContainer">
-                        <img src={"data:image/png;base64," + receipt.receiptImage} style={{ width: '100%' }}>
+                        <img id="receiptImage" src={"data:image/png;base64," + receipt.receiptImage}>
                         </img>
                     </CardContent>
                 </Card>

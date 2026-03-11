@@ -32,12 +32,18 @@ import { toast } from "sonner";
 const ReceiptTable = () => {
 
     const [receiptList, setReceiptList] = useState([]);
+    const [selectedYear, setSelectedYear] = useState('');
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     useEffect(() => {
+        if (selectedYear === '') {
+            return;
+        }
         async function fetchReceipts() {
             try {
-                const response = await axios.get('http://localhost:8080/api/receipt/view', { headers: { Authorization: `Bearer ${user.accessToken}` } });
+                const response = await axios.get(`http://localhost:8080/api/receipt/view`, { headers: { Authorization: `Bearer ${user.accessToken}` }, params: { year: selectedYear } });
                 setReceiptList(response.data);
             } catch (error) {
                 if (error.response && (error.response.status === 401 || error.response.status === 403)) {
@@ -53,8 +59,7 @@ const ReceiptTable = () => {
                         }
                         if (user.isAuthenticated) {
                             try {
-                                console.log("token in user:" + user.accessToken);
-                                const response = await axios.get('http://localhost:8080/api/receipt/view', { headers: { Authorization: `Bearer ${token}` } });
+                                const response = await axios.get(`http://localhost:8080/api/receipt/view`, { headers: { Authorization: `Bearer ${user.accessToken}` }, params: { year: selectedYear } });
                                 setReceiptList(response.data);
                                 toast.success("Upload Successful after token refresh");
                             } catch (error) {
@@ -72,24 +77,11 @@ const ReceiptTable = () => {
             }
         }
         fetchReceipts();
-    }, []);
-
-
-    const navigate = useNavigate();
-    const [selectedReceiptsYear, setSelectedReceiptsYear] = useState([]);
-    const [selectedYear, setSelectedYear] = useState('');
+    }, [selectedYear]);
 
     const onViewReceipt = (receipt) => {
         navigate(`/receipt/${receipt.id}`);
     }
-
-    useEffect(() => {
-        console.log("Selected Year changed:", selectedYear);
-        console.log("Receipt List:", receiptList);
-        const filteredReceipts = receiptList.filter(receipt => new Date(receipt.transactionDate).getFullYear() === Number(selectedYear));
-        console.log("Filtered Receipts:", filteredReceipts);
-        setSelectedReceiptsYear(filteredReceipts);
-    }, [selectedYear]);
 
     return (
         <div id="receiptTableContainer">
@@ -99,11 +91,11 @@ const ReceiptTable = () => {
                     <Button className="clickableButton" variant="outline" style={{ margin: '10px' }}>{selectedYear || "Choose A Year"}</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2021")}>2021</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2022")}>2022</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2023")}>2023</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2024")}>2024</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear("2025")}>2025</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2021)}>2021</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2022)}>2022</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2023)}>2023</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2024)}>2024</DropdownMenuItem>
+                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2025)}>2025</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -122,7 +114,7 @@ const ReceiptTable = () => {
 
                 </TableHeader>
                 <TableBody>
-                    {selectedReceiptsYear.map((receipt, index) => (
+                    {receiptList.map((receipt) => (
                         <TableRow>
                             <TableCell className="tableCell">{receipt.name}</TableCell>
                             <TableCell className="tableCell">{receipt.transactionDate}</TableCell>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -22,10 +22,15 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 
+import { Input } from "@/components/ui/input"
+
+import { Badge } from "@/components/ui/badge"
+import { BadgeCheck } from "lucide-react"
+
 import "./ReceiptDisplay.css"
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { PropagateLoader } from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,6 +42,8 @@ import { Button } from "../../components/ui/button";
 const ReceiptDisplay = () => {
     const [receipt, setReceipt] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isShowReceiptImage, setIsShowReceiptImage] = useState(false);
+    const [isShowEditReceipt, setIsShowEditReceipt] = useState(false);
     const { id } = useParams();
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
@@ -87,6 +94,13 @@ const ReceiptDisplay = () => {
         fetchReceipt();
     }, [id]);
 
+    const handleDownload = () => {
+        const link = document.createElement("a");
+        link.href = "data:image/png;base64," + receipt.receiptImage;
+        link.download = `receipt_${receipt.id || Date.now()}.png`;
+        link.click();
+    };
+
     if (loading) {
         return <div>
             <PropagateLoader loading={loading} />
@@ -96,73 +110,109 @@ const ReceiptDisplay = () => {
     return (
         <>
             <h1>Receipt Display</h1>
-            <div id="mainCardContainer">
-                <Card className="receiptCard">
-                    <CardHeader>
+            <Card className="receiptCard">
+                <CardHeader id="receiptCardHeader">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <CardTitle id="receiptTitle">INVOICE #{receipt.id}</CardTitle>
-                    </CardHeader>
-                    <CardContent id="receiptTextContent">
-                        <table>
+                        <Badge variant="outline" className="bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300"><BadgeCheck data-icon="inline-start" />Tax Claimable</Badge>
+                    </div>
+                    <DropdownMenu id="receiptDownloadMenu">
+                        <DropdownMenuTrigger className="clickableButton"><FontAwesomeIcon icon={faEllipsis} /></DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem className="clickableButton" onClick={() => setIsShowReceiptImage(true)}>
+                                Show Receipt
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="clickableButton" onClick={() => setIsShowEditReceipt(true)}>
+                                Edit Receipt Details
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </CardHeader>
+                <CardContent id="receiptCardContent">
+                    <table>
+                        <tbody>
                             <tr>
-                                <th>MERCHANT</th>
-                                {receipt && (
-                                    <td>{receipt.name}</td>
-                                )}
+                                <th>Merchant</th>
+                                <td>{!isShowEditReceipt
+                                    ? receipt.name
+                                    : <Input value={receipt.name} style={{ width: 'auto', minWidth: `${receipt.name.length * 8}px` }} />}
+                                </td>
                             </tr>
                             <tr>
-                                <th>AMOUNT</th>
-                                {receipt && (
-                                    <td>RM{receipt.receiptAmount}</td>
-                                )}
+                                <th>Amount</th>
+                                <td>{!isShowEditReceipt
+                                    ? `RM${receipt.receiptAmount}`
+                                    : <Input value={receipt.receiptAmount} style={{ width: 'auto', minWidth: `${receipt.receiptAmount.toString().length * 8}px` }} />}
+                                </td>
                             </tr>
                             <tr>
-                                <th>TRANSACTION DATE</th>
-                                {receipt && (
-                                    <td>{receipt.transactionDate}</td>
-                                )}
+                                <th>Transaction Date</th>
+                                <td>{!isShowEditReceipt
+                                    ? receipt.transactionDate
+                                    : <Input value={receipt.transactionDate} style={{ width: 'auto', minWidth: `${receipt.transactionDate.length * 8}px` }} />}
+                                </td>
                             </tr>
                             <tr>
-                                <th>ITEMS</th>
-                                {receipt && (
-                                    <td>
-                                        <ul>
-                                            {receipt.items.map((item, index) => (
-                                                <li key={item.id}>{index + 1}. {item.itemName} - RM{item.itemPrice}</li>
-                                            ))}
-                                        </ul>
-                                    </td>
-                                )}
+                                <th>Items</th>
+                                <td>
+                                    <ul>
+                                        {receipt.items.map((item, index) => {
+                                            const itemText = `${index + 1}. ${item.itemName} - RM${item.itemPrice}`;
+                                            return (
+                                                <li key={item.id}>
+                                                    {!isShowEditReceipt
+                                                        ? itemText
+                                                        : <Input value={itemText} style={{ width: 'auto', minWidth: `${itemText.length * 8}px` }} />}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </td>
                             </tr>
-                        </table>
-                    </CardContent>
-                    <CardFooter id="receiptFooter">
-                        <h2 id="totalAmount" style={{ textAlign: 'right', fontWeight: '800', fontSize: '23px' }}>TOTAL: RM{receipt.receiptAmount}</h2>
-                        <div>
-                            <Button className="clickableButton" variant="outline" style={{ marginRight: '10px' }}>Display Original</Button>
-                            <Button className="clickableButton" variant="outline">Display Scanned</Button>
-                        </div>
-                    </CardFooter>
-                </Card>
-                <Card className="receiptCard">
-                    <CardHeader>
-                        <CardTitle id="receiptImageTitle">
-                            <p>Receipt Image</p>
-                            <DropdownMenu id="receiptDownloadMenu">
-                                <DropdownMenuTrigger><FontAwesomeIcon icon={faEllipsis} /></DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem>Download Original Image</DropdownMenuItem>
-                                    <DropdownMenuItem>Download Scanned Image</DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent id="receiptImageContainer">
-                        <img id="receiptImage" src={"data:image/png;base64," + receipt.receiptImage}>
-                        </img>
-                    </CardContent>
-                </Card>
-            </div >
+                            <tr>
+                                <th>Additional Information</th>
+                                <td>
+                                    <ul>
+                                        {receipt.items.map((item, index) => {
+                                            const itemText = `${index + 1}. ${item.itemDescription}`;
+                                            return (
+                                                <li key={item.id}>
+                                                    {!isShowEditReceipt
+                                                        ? `${index + 1}. ${item.itemDescription}`
+                                                        : <Input value={itemText} style={{ width: 'auto', minWidth: `${`${index + 1}. ${item.itemDescription}`.length * 8}px`, maxWidth: '100%' }} />}
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </CardContent>
+                <CardFooter id="receiptCardFooter">
+                    {!isShowEditReceipt ? (
+                        <h2 id="totalAmount" style={{ textAlign: 'right', fontWeight: '800', fontSize: '23px' }}>Total: RM{receipt.receiptAmount}</h2>
+                    ) : <><h2>Total</h2> <Input value={receipt.receiptAmount}></Input></>}
 
+                </CardFooter>
+                {isShowEditReceipt && (<Button className="clickableButton" onClick={() => setIsShowEditReceipt(false)}>
+                    Save Changes
+                </Button>
+                )
+                }
+            </Card>
+            {
+                isShowReceiptImage && (
+                    <Dialog open={isShowReceiptImage} onOpenChange={setIsShowReceiptImage}>
+                        <DialogContent>
+                            <img id="receiptImageDialog" src={"data:image/png;base64," + receipt.receiptImage}>
+                            </img>
+                            <Button className="clickableButton" onClick={handleDownload}>
+                                <FontAwesomeIcon icon={faDownload} /> Download Receipt Image
+                            </Button>
+                        </DialogContent>
+                    </Dialog>)
+            }
         </>
     )
 }

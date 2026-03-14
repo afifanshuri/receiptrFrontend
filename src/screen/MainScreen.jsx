@@ -1,14 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import '../styles/MainScreenStyle.css'
 import { Button } from "../components/ui/button"
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { faCamera, faReceipt, faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { fetchStatistics } from "../service/statisticsService";
 
 const MainScreen = () => {
     const user = useSelector((state) => state.user);
     const [askAiEnabled, setaskAiEnabled] = useState(false);
+    const [statistics, setStatistics] = useState(null);
+
+    useEffect(() => {
+        const loadStats = async () => {
+            const data = await fetchStatistics(user);
+            setStatistics(data);
+        };
+
+        loadStats();
+    }, [user]);
 
     function onTriggerAskAi() {
         setaskAiEnabled(!askAiEnabled);
@@ -30,8 +41,8 @@ const MainScreen = () => {
 
             <div id="statisticsContainer">
                 <div className="statisticCard">
-                    <h3>Latest Receipts Uploaded</h3>
-                    <p>15</p>
+                    <h3>Total Amount of Receipts Uploaded</h3>
+                    <p>{statistics}</p>
                 </div>
                 <div className="statisticCard">
                     <h3>Total Spent</h3>

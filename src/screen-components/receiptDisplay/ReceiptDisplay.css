@@ -1,67 +1,52 @@
-#mainCardContainer {
+/* Browser */
+.receiptCard {
+  font-size: 15px;
+  text-align: center;
+  font-family: "Inter", sans-serif !important;
   display: flex;
-  width: 50vw;
+  width: 30vw;
   margin: 0 auto;
   margin-top: 20px;
   margin-bottom: 20px;
   letter-spacing: -1px;
 }
 
-@media (max-width: 768px) {
-  #mainCardContainer {
-    flex-direction: column;
+/* Small laptop */
+@media (max-width: 1024px) {
+  .receiptCard {
+    width: 60vw;
   }
 }
 
-.receiptCard {
-  width: 500px;
-  height: 500px;
-  font-size: 15px;
-  text-align: center;
-  font-family: "Courier Prime", "Inter", sans-serif !important;
-  margin: 10px;
+/* Tablet */
+@media (max-width: 768px) {
+  .receiptCard {
+    width: 80vw;
+    font-size: 13px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .receiptCard {
+    width: 95vw;
+    font-size: 13px;
+  }
+}
+
+#receiptCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 #receiptTitle {
   text-align: left;
 }
 
-#receiptFooter {
+#receiptCardFooter {
   display: flex;
-  flex-direction: column;
   justify-content: flex-end;
-}
-
-#receiptTextContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-#receiptTextContentLeft {
-  text-align: left;
-  font-weight: 800;
-}
-
-#receiptTextContentRight {
-  text-align: right;
-  font-weight: 200;
-}
-
-#receiptImageTitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: "Inter", sans-serif !important;
-}
-
-#receiptDownloadMenu {
-  margin-top: 10px;
-  float: right;
-}
-
-#receiptDownloadMenu:hover {
-  cursor: pointer;
 }
 
 th {
@@ -83,18 +68,6 @@ tr {
 
 table {
   border-bottom: 1px solid lightgray;
-}
-
-#receiptImageContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  max-height: 100%;
-}
-
-#receiptImage {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+  padding-bottom: 10px;
+  width: 100%;
 }

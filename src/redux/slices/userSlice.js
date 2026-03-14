@@ -8,6 +8,7 @@ export const userSlice = createSlice({
       firstName: null,
       lastName: null,
       email: null,
+      role: null,
     },
     accessToken: null,
     refreshToken: null,
@@ -20,6 +21,7 @@ export const userSlice = createSlice({
       state.profile.firstName = action.payload.firstName;
       state.profile.lastName = action.payload.lastName;
       state.profile.email = action.payload.email;
+      state.profile.role = action.payload.role;
     },
     setAccessToken: (state, action) => {
       state.accessToken = action.payload;
@@ -36,6 +38,7 @@ export const userSlice = createSlice({
       state.refreshToken = null;
       state.isAuthenticated = false;
       state.isFirstLogin = false;
+      state.profile.role = null;
     },
   },
 });

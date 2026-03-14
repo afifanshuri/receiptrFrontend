@@ -9,6 +9,7 @@
   margin-top: 20px;
   margin-bottom: 20px;
   letter-spacing: -1px;
+  padding: 20px;
 }
 
 /* Small laptop */
@@ -57,7 +58,6 @@ th {
 
 td {
   text-align: left;
-  width: 60%;
   vertical-align: top;
   padding-bottom: 10px;
 }
@@ -70,4 +70,39 @@ table {
   border-bottom: 1px solid lightgray;
   padding-bottom: 10px;
   width: 100%;
+}
+
+.innerEditableFields {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+#outerEditableItemContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+#innerEditableItemContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 10px;
+  margin-bottom: 10px;
+}
+
+#itemNamePriceContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+#editReceiptButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
 }

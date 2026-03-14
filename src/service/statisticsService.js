@@ -1,5 +1,4 @@
 import axios from "axios";
-import { refreshAccessToken } from "./authService";
 
 const fetchStatistics = async (user) => {
   try {

@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -21,8 +21,9 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-
+import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 
 import { Badge } from "@/components/ui/badge"
 import { BadgeCheck } from "lucide-react"
@@ -30,7 +31,7 @@ import { BadgeCheck } from "lucide-react"
 import "./ReceiptDisplay.css"
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faEllipsis, faTrash } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { PropagateLoader } from "react-spinners";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,6 +39,7 @@ import { toast } from "sonner";
 import { refreshAccessToken } from "../../service/authService";
 import { setAccessToken, setUserAuthenticated } from "../../redux/slices/userSlice";
 import { Button } from "../../components/ui/button";
+import { saveReceipt } from "../../service/receiptService";
 
 const ReceiptDisplay = () => {
     const [receipt, setReceipt] = useState(null);
@@ -101,6 +103,26 @@ const ReceiptDisplay = () => {
         link.click();
     };
 
+    const onHandleSaveChanges = async (receiptData) => {
+        console.log(user);
+        const response = await saveReceipt(receiptData, user);
+        console.log(response);
+        if (response === 200) {
+            toast.success("Changes saved successfully!");
+        } else {
+            toast.error("An error occurred while saving changes.");
+        }
+        setIsShowEditReceipt(false);
+    }
+
+    const onDeleteRow = (type, index) => {
+        if (type === 1) {
+            receipt.items.splice(index, 1);
+        } else if (type === 2) {
+            receipt.items.pop();
+        }
+    }
+
     if (loading) {
         return <div>
             <PropagateLoader loading={loading} />
@@ -135,25 +157,18 @@ const ReceiptDisplay = () => {
                                 <th>Merchant</th>
                                 <td>{!isShowEditReceipt
                                     ? receipt.name
-                                    : <Input value={receipt.name} style={{ width: 'auto', minWidth: `${receipt.name.length * 8}px` }} />}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Amount</th>
-                                <td>{!isShowEditReceipt
-                                    ? `RM${receipt.receiptAmount}`
-                                    : <Input value={receipt.receiptAmount} style={{ width: 'auto', minWidth: `${receipt.receiptAmount.toString().length * 8}px` }} />}
+                                    : <Input defaultValue={receipt.name} onChange={(e) => { receipt.name = e.target.value }} />}
                                 </td>
                             </tr>
                             <tr>
                                 <th>Transaction Date</th>
                                 <td>{!isShowEditReceipt
                                     ? receipt.transactionDate
-                                    : <Input value={receipt.transactionDate} style={{ width: 'auto', minWidth: `${receipt.transactionDate.length * 8}px` }} />}
+                                    : <Input defaultValue={receipt.transactionDate} onChange={(e) => { receipt.transactionDate = e.target.value }} />}
                                 </td>
                             </tr>
                             <tr>
-                                <th>Items</th>
+                                <th>Items & Description</th>
                                 <td>
                                     <ul>
                                         {receipt.items.map((item, index) => {
@@ -161,25 +176,30 @@ const ReceiptDisplay = () => {
                                             return (
                                                 <li key={item.id}>
                                                     {!isShowEditReceipt
-                                                        ? itemText
-                                                        : <Input value={itemText} style={{ width: 'auto', minWidth: `${itemText.length * 8}px` }} />}
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>Additional Information</th>
-                                <td>
-                                    <ul>
-                                        {receipt.items.map((item, index) => {
-                                            const itemText = `${index + 1}. ${item.itemDescription}`;
-                                            return (
-                                                <li key={item.id}>
-                                                    {!isShowEditReceipt
-                                                        ? `${index + 1}. ${item.itemDescription}`
-                                                        : <Input value={itemText} style={{ width: 'auto', minWidth: `${`${index + 1}. ${item.itemDescription}`.length * 8}px`, maxWidth: '100%' }} />}
+                                                        ? <div>
+                                                            {<div style={{}}>{itemText}</div>}
+                                                            {item.itemDescription && <div style={{ marginTop: '7px', marginBottom: '7px', fontWeight: '300', fontSize: '14px' }}>{item.itemDescription}</div>}
+                                                        </div>
+                                                        :
+                                                        <div id="outerEditableItemContainer">
+                                                            <div style={{ marginRight: '5px' }}>{index + 1}</div>
+                                                            <div id="innerEditableItemContainer">
+                                                                <div id="itemNamePriceContainer">
+                                                                    <div>
+                                                                        <Label>Item Name</Label>
+                                                                        <Input defaultValue={item.itemName} onChange={(e) => { item.itemName = e.target.value }} />
+                                                                    </div>
+                                                                    <div>
+                                                                        <Label>Item Price</Label>
+                                                                        <Input defaultValue={item.itemPrice} onChange={(e) => { item.itemPrice = e.target.value }} />
+                                                                    </div>
+                                                                </div>
+                                                                <div id="itemDescriptionContainer">
+                                                                    <Label>Item Description</Label>
+                                                                    <Textarea defaultValue={item.itemDescription} onChange={(e) => { item.itemDescription = e.target.value }} />
+                                                                </div>
+                                                            </div>
+                                                        </div>}
                                                 </li>
                                             );
                                         })}
@@ -192,12 +212,18 @@ const ReceiptDisplay = () => {
                 <CardFooter id="receiptCardFooter">
                     {!isShowEditReceipt ? (
                         <h2 id="totalAmount" style={{ textAlign: 'right', fontWeight: '800', fontSize: '23px' }}>Total: RM{receipt.receiptAmount}</h2>
-                    ) : <><h2>Total</h2> <Input value={receipt.receiptAmount}></Input></>}
+                    ) : <div><h2>Total</h2> <Input defaultValue={receipt.receiptAmount} onChange={(e) => { receipt.receiptAmount = e.target.value }}></Input></div>}
 
                 </CardFooter>
-                {isShowEditReceipt && (<Button className="clickableButton" onClick={() => setIsShowEditReceipt(false)}>
-                    Save Changes
-                </Button>
+                {isShowEditReceipt && (
+                    <div id="editReceiptButtons">
+                        <Button className="clickableButton" onClick={() => setIsShowEditReceipt(false)} style={{ backgroundColor: "#dc3545", color: "white" }}>
+                            Cancel
+                        </Button>
+                        <Button className="clickableButton" onClick={() => onHandleSaveChanges(receipt)} style={{ backgroundColor: "#007bff", color: "white" }}>
+                            Save Changes
+                        </Button>
+                    </div>
                 )
                 }
             </Card>

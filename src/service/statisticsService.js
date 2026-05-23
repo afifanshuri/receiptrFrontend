@@ -1,20 +1,10 @@
 import axios from "axios";
+import axiosInstance from "./axiosService";
 
-const fetchStatistics = async (user) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:8080/api/statistics/total`,
-      { headers: { Authorization: `Bearer ${user.accessToken}` } },
-    );
-    return response.data;
-  } catch (error) {
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      console.log("ERROR");
-    }
-  }
+const fetchStatistics = async () => {
+  const response = await axiosInstance.get(`/statistics/view`);
+  console.log("Fetched statistics data: ", response.data);
+  return response.data;
 };
 
 export { fetchStatistics };

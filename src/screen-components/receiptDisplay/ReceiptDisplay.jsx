@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
     Card,
     CardContent,
@@ -15,38 +15,33 @@ import {
 
 import {
     Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+    DialogContent
 } from "@/components/ui/dialog"
+
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-
 import { Badge } from "@/components/ui/badge"
 import { BadgeCheck } from "lucide-react"
-
-import "./ReceiptDisplay.css"
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faEllipsis, faTrash } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { PropagateLoader } from "react-spinners";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { refreshAccessToken } from "../../service/authService";
-import { setAccessToken, setUserAuthenticated } from "../../redux/slices/userSlice";
 import { Button } from "../../components/ui/button";
-import { saveReceipt } from "../../service/receiptService";
+import { saveReceipt, fetchReceiptById } from "../../service/receiptService";
+import { refreshAccessToken } from "../../service/authService";
+import "./ReceiptDisplay.css"
+import { useDispatch, useSelector } from "react-redux";
+import { setUserAuthenticated, setUserNotAuthenticated } from "../../redux/slices/userSlice";
 
-const ReceiptDisplay = () => {
+const ReceiptDisplay = ({ id: idProp }) => {
     const [receipt, setReceipt] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isShowReceiptImage, setIsShowReceiptImage] = useState(false);
     const [isShowEditReceipt, setIsShowEditReceipt] = useState(false);
-    const { id } = useParams();
+    const { id: idParam } = useParams();
+    const id = idProp ?? idParam;
     const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
@@ -54,44 +49,12 @@ const ReceiptDisplay = () => {
         async function fetchReceipt() {
             setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8080/api/receipt/view/${id}`, { headers: { Authorization: `Bearer ${user.accessToken}` } });
-                setReceipt(response.data);
+                const response = await fetchReceiptById(id, user);
+                setReceipt(response);
                 setLoading(false);
             } catch (error) {
-                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                    try {
-                        console.log("Refreshing token...");
-                        const token = await refreshAccessToken();
-                        if (token !== null) {
-                            dispatch(setUserAuthenticated(true));
-                            dispatch(setAccessToken(token));
-                            console.log("Token refreshed: " + token);
-                        } else {
-                            dispatch(setUserAuthenticated(false));
-                        }
-                        if (user.isAuthenticated) {
-                            try {
-                                console.log("token in user:" + user.accessToken);
-                                const response = await axios.get(`http://localhost:8080/api/receipt/view/${id}`, { headers: { Authorization: `Bearer ${token}` } });
-                                setReceipt(response.data);
-                                setLoading(false);
-                                toast.success("Upload Successful after token refresh");
-                            } catch (error) {
-                                console.error("Upload failed after token refresh:", error);
-                                toast.error("An Error occurred during upload after token refresh");
-                            }
-                        } else {
-                            toast.error("Token refresh failed. Please log in again.");
-                        }
-                    } catch (error) {
-                        console.error("Upload failed after token refresh:", error);
-                        toast.error("An Error occurred during upload after token refresh");
-                    }
-                } else {
-                    console.error("Error fetching receipt:", error);
-                    toast.error("An error occurred while fetching the receipt.");
-                }
-            };
+                toast.error("An Error occurred during upload after token refresh" + error);
+            }
         }
         fetchReceipt();
     }, [id]);
@@ -104,23 +67,50 @@ const ReceiptDisplay = () => {
     };
 
     const onHandleSaveChanges = async (receiptData) => {
-        console.log(user);
-        const response = await saveReceipt(receiptData, user);
-        console.log(response);
-        if (response === 200) {
-            toast.success("Changes saved successfully!");
-        } else {
-            toast.error("An error occurred while saving changes.");
+        try {
+            const response = await saveReceipt(receiptData, user);
+            if (response === 200) {
+                toast.success("Changes saved successfully!");
+            } else {
+                toast.error("An error occurred while saving changes.");
+            }
+        } catch (error) {
+            if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                try {
+                    console.log("Refreshing token...");
+                    const token = await refreshAccessToken();
+                    if (token === null) {
+                        dispatch(setUserNotAuthenticated());
+                        toast.error("Token refresh failed. Please log in again.");
+                        return;
+                    }
+                    dispatch(setUserAuthenticated(token));
+                    try {
+                        const response = await saveReceipt(receiptData, { ...user, accessToken: token });
+                        if (response === 200) {
+                            toast.success("Changes saved successfully!");
+                        } else {
+                            toast.error("An error occurred while saving changes.");
+                        }
+                    } catch (error) {
+                        console.error("Upload failed after token refresh:", error);
+                        toast.error("An Error occurred during upload after token refresh");
+                    }
+                } catch (error) {
+                    toast.error("An Error occurred during upload after token refresh" + error);
+                }
+            } else {
+                toast.error("An error occurred while saving changes.");
+            }
         }
+
+
         setIsShowEditReceipt(false);
     }
 
-    const onDeleteRow = (type, index) => {
-        if (type === 1) {
-            receipt.items.splice(index, 1);
-        } else if (type === 2) {
-            receipt.items.pop();
-        }
+    const onDeleteRow = (index) => {
+        const updatedItems = receipt.items.filter((_, i) => i !== index);
+        setReceipt({ ...receipt, items: updatedItems });
     }
 
     if (loading) {
@@ -167,7 +157,7 @@ const ReceiptDisplay = () => {
                                     : <Input defaultValue={receipt.transactionDate} onChange={(e) => { receipt.transactionDate = e.target.value }} />}
                                 </td>
                             </tr>
-                            <tr>
+                            <tr id="itemContainer">
                                 <th>Items & Description</th>
                                 <td>
                                     <ul>
@@ -182,7 +172,6 @@ const ReceiptDisplay = () => {
                                                         </div>
                                                         :
                                                         <div id="outerEditableItemContainer">
-                                                            <div style={{ marginRight: '5px' }}>{index + 1}</div>
                                                             <div id="innerEditableItemContainer">
                                                                 <div id="itemNamePriceContainer">
                                                                     <div>
@@ -199,6 +188,7 @@ const ReceiptDisplay = () => {
                                                                     <Textarea defaultValue={item.itemDescription} onChange={(e) => { item.itemDescription = e.target.value }} />
                                                                 </div>
                                                             </div>
+                                                            <FontAwesomeIcon icon={faTrash} className="clickableButton" onClick={() => onDeleteRow(index)} style={{ color: "#dc3545", marginLeft: "10px" }} />
                                                         </div>}
                                                 </li>
                                             );

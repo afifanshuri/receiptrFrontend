@@ -1,25 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import '../styles/MainScreenStyle.css'
 import { Button } from "../components/ui/button"
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { faCamera, faReceipt, faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { fetchStatistics } from "../service/statisticsService";
+import StatisticsDisplay from "../screen-components/statisticsDisplay/statisticsDisplay";
+import { Receipt } from "lucide-react";
+import ReceiptrBotDisplay from "../screen-components/receiptrBotDisplay/ReceiptrBotDisplay";
 
 const MainScreen = () => {
     const user = useSelector((state) => state.user);
     const [askAiEnabled, setaskAiEnabled] = useState(false);
-    const [statistics, setStatistics] = useState(null);
-
-    useEffect(() => {
-        const loadStats = async () => {
-            const data = await fetchStatistics(user);
-            setStatistics(data);
-        };
-
-        loadStats();
-    }, [user]);
 
     function onTriggerAskAi() {
         setaskAiEnabled(!askAiEnabled);
@@ -30,7 +22,7 @@ const MainScreen = () => {
         <div id="mainScreen-mainContainer">
             <h1>Welcome, {user.profile.firstName}</h1>
             {
-                askAiEnabled && <input id="aiSearchBar" type="text" placeholder="What are you looking for?" />
+                askAiEnabled && <ReceiptrBotDisplay />
             }
 
             <div id="mainScreen-buttonContainer">
@@ -39,20 +31,7 @@ const MainScreen = () => {
                 <Button className="clickableButton" onClick={() => { onTriggerAskAi() }}>Ask receiptrBot<FontAwesomeIcon icon={faRobot} /></Button>
             </div>
 
-            <div id="statisticsContainer">
-                <div className="statisticCard">
-                    <h3>Total Amount of Receipts Uploaded</h3>
-                    <p>{statistics}</p>
-                </div>
-                <div className="statisticCard">
-                    <h3>Total Spent</h3>
-                    <p>$250.0000</p>
-                </div>
-                <div className="statisticCard">
-                    <h3>Total Spent</h3>
-                    <p>$250.00</p>
-                </div>
-            </div>
+            <StatisticsDisplay />
         </div>
     )
 };

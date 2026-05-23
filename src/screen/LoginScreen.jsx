@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button"
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setAccessToken, setUser, setUserAuthenticated } from "../redux/slices/userSlice";
+import { setUser, setUserAuthenticated } from "../redux/slices/userSlice";
 
 const LoginScreen = () => {
     const nav = useNavigate();
@@ -34,16 +34,15 @@ const LoginScreen = () => {
     const dispatch = useDispatch();
 
     const handleLogin = async () => {
-        console.log("Login button clicked" + email + " " + password);
         await axios.post("http://localhost:8080/api/auth/authenticate", {
             email: email,
             password: password
         }, { withCredentials: true }).then(response => {
             dispatch(setUser(response.data.user));
-            dispatch(setAccessToken(response.data.token));
-            dispatch(setUserAuthenticated(true));
+            dispatch(setUserAuthenticated(response.data.token));
             nav("/home");
             console.log("User after login:", response.data.user);
+            console.log("Token after login:", response.data.token);
         }).catch(error => {
             console.error("There was an error logging in!", error);
         });

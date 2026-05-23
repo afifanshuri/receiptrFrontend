@@ -1,0 +1,40 @@
+#aiSearchBar {
+  width: 50%;
+  padding: 0.5rem;
+  border-radius: 20px;
+  text-align: center;
+  outline: none;
+}
+
+/* Small laptop */
+@media (max-width: 1024px) {
+  #aiSearchBar {
+    width: 70%;
+  }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+  #aiSearchBar {
+    width: 90%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  #aiSearchBar {
+    width: 90%;
+  }
+}
+
+#aiSearchBar:focus {
+  outline: none;
+}
+
+#receiptrBotSearchContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}

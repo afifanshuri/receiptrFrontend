@@ -23,10 +23,10 @@ import "./ReceiptTable.css"
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { refreshAccessToken } from "../../service/authService";
-import { setAccessToken, setUserAuthenticated } from "../../redux/slices/userSlice";
+import { fetchReceiptsByYear } from "../../service/receiptService";
+import { setUserAuthenticated, setUserNotAuthenticated } from "../../redux/slices/userSlice";
 import { toast } from "sonner";
 
 const ReceiptTable = () => {
@@ -43,37 +43,11 @@ const ReceiptTable = () => {
         }
         async function fetchReceipts() {
             try {
-                const response = await axios.get(`http://localhost:8080/api/receipt/view`, { headers: { Authorization: `Bearer ${user.accessToken}` }, params: { year: selectedYear } });
-                setReceiptList(response.data);
+                const response = await fetchReceiptsByYear(selectedYear, user);
+                setReceiptList(response);
+                console.log(receiptList);
             } catch (error) {
-                if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                    try {
-                        console.log("Refreshing token...");
-                        const token = await refreshAccessToken();
-                        if (token !== null) {
-                            dispatch(setUserAuthenticated(true));
-                            dispatch(setAccessToken(token));
-                            console.log("Token refreshed: " + token);
-                        } else {
-                            dispatch(setUserAuthenticated(false));
-                        }
-                        if (user.isAuthenticated) {
-                            try {
-                                const response = await axios.get(`http://localhost:8080/api/receipt/view`, { headers: { Authorization: `Bearer ${user.accessToken}` }, params: { year: selectedYear } });
-                                setReceiptList(response.data);
-                                toast.success("Upload Successful after token refresh");
-                            } catch (error) {
-                                console.error("Upload failed after token refresh:", error);
-                                toast.error("An Error occurred during upload after token refresh");
-                            }
-                        } else {
-                            toast.error("Token refresh failed. Please log in again.");
-                        }
-                    } catch (error) {
-                        console.error("Upload failed after token refresh:", error);
-                        toast.error("An Error occurred during upload after token refresh");
-                    }
-                }
+                toast.error("An Error occurred during upload after token refresh" + error);
             }
         }
         fetchReceipts();

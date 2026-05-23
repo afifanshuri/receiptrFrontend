@@ -12,7 +12,7 @@ import {
 import './Navbar.css';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { refreshAccessToken } from "../../service/authService";
+import { refreshAccessToken, onHandleLogOut } from "../../service/authService";
 import { persistor } from "../../redux/store";
 import { resetUser } from "../../redux/slices/userSlice";
 
@@ -35,9 +35,10 @@ const Navbar = () => {
         }
     }
 
-    const onHandleLogOut = async () => {
+    const onLogout = async () => {
         dispatch(resetUser());
         await persistor.purge();
+        await onHandleLogOut();
         nav("/");
     }
 
@@ -60,7 +61,7 @@ const Navbar = () => {
                         <NavigationMenuContent className="navbarItems">
                             {isUserAuthenticated &&
                                 <div>
-                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => onHandleLogOut()}>Log Out</NavigationMenuLink>
+                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => onLogout()}>Log Out</NavigationMenuLink>
                                 </div>
                             }
                             {

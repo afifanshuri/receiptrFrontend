@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import MainScreen from "../screen/MainScreen";
 import ReceiptDashboard from "../screen/ReceiptDashboard";
 import ReceiptDisplay from "../screen-components/receiptDisplay/ReceiptDisplay";
@@ -15,13 +15,23 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={isUserAuthenticated ? <MainScreen /> : <LandingPage />} />
-            <Route path="/home" element={isUserAuthenticated ? <MainScreen /> : <LandingPage />} />
+            <Route path="/home" element={<ProtectedRoute><MainScreen /></ProtectedRoute>} />
             <Route path="/login" element={<LoginScreen />} />
             <Route path="/register" element={<RegisterScreen />} />
-            <Route path="/dashboard" element={<ReceiptDashboard />} />
-            <Route path="/receipt/:id" element={<ReceiptDisplay />} />
-            <Route path="/scan" element={<ReceiptCamera />} />
+            <Route path="/dashboard" element={<ProtectedRoute><ReceiptDashboard /></ProtectedRoute>} />
+            <Route path="/receipt/:id" element={<ProtectedRoute><ReceiptDisplay /></ProtectedRoute>} />
+            <Route path="/scan" element={<ProtectedRoute><ReceiptCamera /></ProtectedRoute>} />
         </Routes>
     );
 }
+
+const ProtectedRoute = ({ children }) => {
+    const isUserAuthenticated = useSelector((state) => state.user.isAuthenticated === true);
+    if (!isUserAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+};
+
 export default AppRoutes;

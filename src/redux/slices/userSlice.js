@@ -23,11 +23,13 @@ export const userSlice = createSlice({
       state.profile.email = action.payload.email;
       state.profile.role = action.payload.role;
     },
-    setAccessToken: (state, action) => {
+    setUserAuthenticated: (state, action) => {
+      state.isAuthenticated = true;
       state.accessToken = action.payload;
     },
-    setUserAuthenticated: (state, action) => {
-      state.isAuthenticated = action.payload;
+    setUserNotAuthenticated: (state) => {
+      state.isAuthenticated = false;
+      state.accessToken = null;
     },
     resetUser: (state) => {
       state.id = null;
@@ -43,7 +45,12 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setUser, setAccessToken, resetUser, setUserAuthenticated } =
-  userSlice.actions;
+export const {
+  setUser,
+  setAccessToken,
+  resetUser,
+  setUserAuthenticated,
+  setUserNotAuthenticated,
+} = userSlice.actions;
 
 export default userSlice.reducer;

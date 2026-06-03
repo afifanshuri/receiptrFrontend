@@ -15,6 +15,8 @@ import { PropagateLoader } from "react-spinners";
 import { useSelector } from "react-redux";
 import { addUploadedReceipt, addUploadedReceipt64 } from "../../service/receiptService";
 import ReceiptDisplay from "../receiptDisplay/ReceiptDisplay";
+import { Spinner } from "@/components/ui/spinner"
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const ReceiptCamera = () => {
     const cameraRef = useRef(null);
@@ -80,7 +82,7 @@ const ReceiptCamera = () => {
                     resetState();
                 }
             }}>
-                <div id="dialogContainer">
+                <div id="receiptUloadButtonContainer">
                     <DialogTrigger className="capture-button" asChild>
                         <Button onClick={() => captureReceipt()}>Capture Receipt</Button>
                     </DialogTrigger>
@@ -89,46 +91,55 @@ const ReceiptCamera = () => {
                     </DialogTrigger>
                 </div>
 
-                {!isLoading && imageTaken && (
-                    <DialogContent>
-                        <DialogDescription id="cameraDialogContainer">
-                            <img src={image} alt="Captured Receipt" />
-                            <div id="buttonContainer">
-                                <Button onClick={() => { resetState() }}>Retake</Button>
-                                <Button onClick={() => { onUploadCapturedReceipt() }}>Save</Button>
-                            </div>
-                        </DialogDescription>
-                    </DialogContent>
-                )}
+                <DialogContent id="dialogContainer" className={isLoading ? "[&>button]:hidden" : ""}>
+                    {isLoading ? (
+                        <div id="loadingContainer">
+                            <DialogTitle>Analyzing Your Receipt</DialogTitle>
+                            <Spinner loading={isLoading} />
+                        </div>
+                    ) : (
+                        <div>
+                            <DialogTitle className="text-center">
+                                {receiptId ? "Edit Receipt" : "Receipt Upload"}
+                            </DialogTitle>
 
-                {!isLoading && uploadMode && (
-                    <DialogContent>
-                        <DialogDescription id="buttonContainer">
-                            <Button><input type="file" id="fileInput" accept="image/*" multiple onChange={(e) => { setImageUpload(e.target.files[0]) }}></input><FontAwesomeIcon icon={faUpload}></FontAwesomeIcon></Button>
-                            <Button onClick={() => onUploadFile()}>Submit Upload</Button>
-                        </DialogDescription>
-                    </DialogContent>
-                )}
+                            {imageTaken && !receiptId && (
+                                <div id="cameraDialogContainer">
+                                    <img src={image} alt="Captured Receipt" className="max-h-64 object-contain" />
+                                    <div id="buttonContainer" className="flex gap-2 justify-end">
+                                        <Button variant="outline" onClick={resetState}>Retake</Button>
+                                        <Button onClick={onUploadCapturedReceipt}>Save</Button>
+                                    </div>
+                                </div>
+                            )}
 
-                {isLoading && (
-                    <DialogContent id="loadingContainer" className="[&>button]:hidden">
-                        Analyzing Your Receipt
-                        <PropagateLoader loading={isLoading} />
-                    </DialogContent>
-                )}
+                            {uploadMode && !receiptId && (
+                                <div id="uploadDialogContainer">
+                                    <div>
+                                        <Button>
+                                            <FontAwesomeIcon icon={faUpload} />
+                                            <input
+                                                type="file"
+                                                id="fileInput"
+                                                accept="image/*"
+                                                onChange={(e) => setImageUpload(e.target.files[0])}
+                                            />
+                                        </Button>
+                                    </div>
+                                    <Button onClick={onUploadFile} disabled={!imageUpload}>Submit Upload</Button>
+                                </div>
+                            )}
 
-                {!isLoading && (imageTaken || imageUpload) && receiptId
-                    && (
-                        <DialogContent id="loadingContainer">
-                            <ReceiptDisplay id={receiptId} />
-                            <Button onClick={() => { resetState() }}>Close</Button>
-                        </DialogContent>
-                    )
-                }
-
+                            {receiptId && (
+                                <div id="receiptDisplayContainer">
+                                    <ReceiptDisplay id={receiptId} />
+                                    <Button onClick={resetState}>Close</Button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </DialogContent>
             </Dialog>
-
-
         </div >
     )
 }

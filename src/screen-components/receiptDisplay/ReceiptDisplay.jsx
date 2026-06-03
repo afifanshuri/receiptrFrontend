@@ -34,6 +34,7 @@ import { refreshAccessToken } from "../../service/authService";
 import "./ReceiptDisplay.css"
 import { useDispatch, useSelector } from "react-redux";
 import { setUserAuthenticated, setUserNotAuthenticated } from "../../redux/slices/userSlice";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 const ReceiptDisplay = ({ id: idProp }) => {
     const [receipt, setReceipt] = useState(null);
@@ -152,9 +153,14 @@ const ReceiptDisplay = ({ id: idProp }) => {
                             </tr>
                             <tr>
                                 <th>Transaction Date</th>
-                                <td>{!isShowEditReceipt
-                                    ? receipt.transactionDate
-                                    : <Input defaultValue={receipt.transactionDate} onChange={(e) => { receipt.transactionDate = e.target.value }} />}
+                                <td>
+                                    {!isShowEditReceipt
+                                        ? receipt.transactionDate
+                                        : <Input
+                                            defaultValue={receipt.transactionDate}
+                                            onChange={(e) => { receipt.transactionDate = e.target.value }}
+                                        />
+                                    }
                                 </td>
                             </tr>
                             <tr id="itemContainer">
@@ -221,6 +227,7 @@ const ReceiptDisplay = ({ id: idProp }) => {
                 isShowReceiptImage && (
                     <Dialog open={isShowReceiptImage} onOpenChange={setIsShowReceiptImage}>
                         <DialogContent>
+                            <DialogTitle style={{ textAlign: 'center' }}>Receipt Proof</DialogTitle>
                             <img id="receiptImageDialog" src={"data:image/png;base64," + receipt.receiptImage}>
                             </img>
                             <Button className="clickableButton" onClick={handleDownload}>

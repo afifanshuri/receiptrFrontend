@@ -15,6 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { refreshAccessToken, onHandleLogOut } from "../../service/authService";
 import { persistor } from "../../redux/store";
 import { resetUser } from "../../redux/slices/userSlice";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuRadioGroup, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Button } from "../../components/ui/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleUser, faList } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = () => {
     const nav = useNavigate();
@@ -45,38 +49,31 @@ const Navbar = () => {
     return (
         <div id="navbarContainer">
             <h1 className="clickableButton" id="navbarTitle" onClick={() => redirectToMainPage()}>receiptr.</h1>
-            <NavigationMenu>
-                <NavigationMenuList>
-                    {!isUserAuthenticated &&
-                        <NavigationMenuItem>
-                            <NavigationMenuTrigger className="clickableButton">Features</NavigationMenuTrigger>
-                            <NavigationMenuContent className="navbarItems">
-                                <NavigationMenuLink className="navLink clickableButton">Receipts Dashboard</NavigationMenuLink>
-                                <NavigationMenuLink className="navLink clickableButton">Receipts Statistics</NavigationMenuLink>
-                            </NavigationMenuContent>
-                        </NavigationMenuItem>
-                    }
-                    <NavigationMenuItem>
-                        <NavigationMenuTrigger className="clickableButton">Account</NavigationMenuTrigger>
-                        <NavigationMenuContent className="navbarItems">
-                            {isUserAuthenticated &&
-                                <div>
-                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => onLogout()}>Log Out</NavigationMenuLink>
-                                </div>
-                            }
-                            {
-                                !isUserAuthenticated &&
-                                <div>
-                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => nav("/login")}>Log In</NavigationMenuLink>
-                                    <NavigationMenuLink className="navLink clickableButton" onClick={() => nav("/register")}>Register</NavigationMenuLink>
-                                </div>
-                            }
-                        </NavigationMenuContent>
-                    </NavigationMenuItem>
-                </NavigationMenuList>
-            </NavigationMenu>
-        </div>
+            <div id="navbarButtonsContainer">
+                {!isUserAuthenticated && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className="clickableButton"><FontAwesomeIcon icon={faList} /> Features</DropdownMenuTrigger>
+                        <DropdownMenuContent className="navbarItems">
+                            <DropdownMenuItem className="navLink clickableButton" onClick={() => nav("/home")}>Receipts Dashboard</DropdownMenuItem>
+                            <DropdownMenuItem className="navLink clickableButton" onClick={() => nav("/statistics")}>Receipts Statistics</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>)}
 
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="clickableButton"><FontAwesomeIcon icon={faCircleUser} /> Account</DropdownMenuTrigger>
+                    {!isUserAuthenticated ? (
+                        <DropdownMenuContent className="navbarItems">
+                            <DropdownMenuItem className="navLink clickableButton" onClick={() => nav("/login")}>Login</DropdownMenuItem>
+                            <DropdownMenuItem className="navLink clickableButton" onClick={() => nav("/register")}>Register</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    ) : (
+                        <DropdownMenuContent className="navbarItems">
+                            <DropdownMenuItem className="navLink clickableButton" onClick={() => onLogout()}>Log Out</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    )}
+                </DropdownMenu>
+            </div>
+        </div >
     );
 }
 

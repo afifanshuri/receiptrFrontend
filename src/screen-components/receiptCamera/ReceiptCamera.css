@@ -13,27 +13,17 @@
   border-radius: 10px;
 }
 
-#test {
-  background-color: red;
-}
-
-#dialogContainer {
-  display: flex;
-  flex-direction: row;
-  margin: 10px;
-  gap: 10px;
-}
-
 .capture-button {
   border-radius: 10px;
   padding: 5px;
   border: 1px solid gray;
 }
 
-#buttonContainer {
+#receiptUloadButtonContainer {
   display: flex;
   flex-direction: row;
   align-items: center;
+  gap: 10px;
 }
 
 #cameraDialogContainer {
@@ -46,4 +36,33 @@
   justify-content: center;
   align-items: center;
   width: 50%;
+}
+
+#uploadDialogContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#loadingContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+#dialogContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+#receiptDisplayContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }

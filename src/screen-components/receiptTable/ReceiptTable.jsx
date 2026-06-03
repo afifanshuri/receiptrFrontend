@@ -23,21 +23,30 @@ import "./ReceiptTable.css"
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch, useSelector } from "react-redux";
-import { refreshAccessToken } from "../../service/authService";
-import { fetchReceiptsByYear } from "../../service/receiptService";
-import { setUserAuthenticated, setUserNotAuthenticated } from "../../redux/slices/userSlice";
+import { useSelector } from "react-redux";
+import { fetchReceiptsByYear, fetchYearsList } from "../../service/receiptService";
 import { toast } from "sonner";
 
 const ReceiptTable = () => {
 
     const [receiptList, setReceiptList] = useState([]);
     const [selectedYear, setSelectedYear] = useState('');
+    const [years, setYears] = useState([]);
     const user = useSelector((state) => state.user);
-    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
+        async function fetchYears() {
+            try {
+                const yearsData = await fetchYearsList();
+                setYears(yearsData);
+            } catch (error) {
+                toast.error("An Error occurred while fetching years" + error);
+
+            }
+        }
+        fetchYears();
+
         if (selectedYear === '') {
             return;
         }
@@ -59,17 +68,14 @@ const ReceiptTable = () => {
 
     return (
         <div id="receiptTableContainer">
-
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button className="clickableButton" variant="outline" style={{ margin: '10px' }}>{selectedYear || "Choose A Year"}</Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2021)}>2021</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2022)}>2022</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2023)}>2023</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2024)}>2024</DropdownMenuItem>
-                    <DropdownMenuItem className="clickableButton" onClick={() => setSelectedYear(2025)}>2025</DropdownMenuItem>
+                    {years.map((year, index) => {
+                        return <DropdownMenuItem key={index} className="clickableButton" onClick={() => setSelectedYear(year)}>{year}</DropdownMenuItem>
+                    })}
                 </DropdownMenuContent>
             </DropdownMenu>
 
@@ -78,24 +84,26 @@ const ReceiptTable = () => {
                     <TableRow>
                         <TableHead className="tableHead">Invoice</TableHead>
                         <TableHead className="tableHead">Date Of Transaction</TableHead>
-                        <DropdownMenu id="optionsButton" className="tableCell clickableButton">
-                            <DropdownMenuTrigger><FontAwesomeIcon icon={faEllipsis} /></DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem>Download All Receipts</DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </TableRow>
+                        <TableHead className="tableHead">
+                            <DropdownMenu id="optionsButton" className="tableCell clickableButton">
+                                <DropdownMenuTrigger><FontAwesomeIcon icon={faEllipsis} /></DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem>Download All Receipts</DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </TableHead>
 
+                    </TableRow>
                 </TableHeader>
+
                 <TableBody>
-                    {receiptList.map((receipt) => (
-                        <TableRow>
+                    {receiptList.map((receipt, index) => (
+                        <TableRow key={index}>
                             <TableCell className="tableCell">{receipt.name}</TableCell>
                             <TableCell className="tableCell">{receipt.transactionDate}</TableCell>
-                            <Button id="viewButton" onClick={() => onViewReceipt(receipt)}>View</Button>
+                            <TableCell className="tableCell"><Button id="viewButton" onClick={() => onViewReceipt(receipt)}>View</Button></TableCell>
                         </TableRow>
                     ))}
-
                 </TableBody>
             </Table>
         </div>

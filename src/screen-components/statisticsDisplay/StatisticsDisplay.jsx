@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from "react"
 import { fetchStatistics } from "../../service/statisticsService";
-import { setUserAuthenticated, setUserNotAuthenticated } from "../../redux/slices/userSlice";
-import { refreshAccessToken } from "../../service/authService";
 import { toast } from "sonner";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import "./statisticsDisplay.css";
 
 const StatisticsDisplay = () => {
 
     const [statistics, setStatistics] = useState(null);
     const user = useSelector((state) => state.user);
-    const dispatch = useDispatch();
 
     useEffect(() => {
         const loadStats = async () => {
             try {
-                console.log("Loading statistics for user: ", user.accessToken);
                 const data = await fetchStatistics(user);
                 setStatistics(data);
             } catch (error) {
@@ -38,7 +34,7 @@ const StatisticsDisplay = () => {
             <h3>Top 3 Latest Receipts</h3>
             {statistics ? statistics.top3LatestReceipts.map((receipt, index) => {
                 return (
-                    <div>
+                    <div key={index}>
                         <p>{receipt.name}</p>
                         <p>{receipt.receiptAmount}</p>
                     </div>
@@ -50,7 +46,7 @@ const StatisticsDisplay = () => {
             <h3>Top 3 Spendings</h3>
             {statistics ? statistics.top3Spending.map((receipt, index) => {
                 return (
-                    <div>
+                    <div key={index}>
                         <p>{receipt.name}</p>
                         <p>{receipt.receiptAmount}</p>
                     </div>

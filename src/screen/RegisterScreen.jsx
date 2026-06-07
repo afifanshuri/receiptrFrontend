@@ -27,9 +27,9 @@ const RegisterScreen = () => {
     const [lname, setLname] = useState('');
     const [phone, setPhone] = useState('');
 
-    const onHandleRegister = () => {
+    const onHandleRegister = async () => {
         try {
-            const response = handleRegister(email, password, fname, lname, phone);
+            const response = await handleRegister(email, password, fname, lname, phone);
             if (response.statusCode === "DUPLICATE") {
                 toast.error("Email already exists. Please use a different email.");
             } else {

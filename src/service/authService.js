@@ -2,11 +2,7 @@ import axios from "axios";
 import axiosInstance from "./axiosService";
 import store from "../redux/store";
 import API_URL from "../constants/constants";
-import {
-  setUser,
-  setUserAuthenticated,
-  setUserNotAuthenticated,
-} from "../redux/slices/userSlice";
+import { setUserNotAuthenticated } from "../redux/slices/userSlice";
 
 const refreshAccessToken = async () => {
   try {
@@ -39,22 +35,20 @@ const onHandleLogOut = async () => {
 };
 
 const handleLogin = async (email, password) => {
-  await axiosInstance
-    .post(
+  try {
+    const response = await axiosInstance.post(
       "/api/auth/authenticate",
       {
         email: email,
         password: password,
       },
       { withCredentials: true },
-    )
-    .then((response) => {
-      store.dispatch(setUser(response.data.user));
-      store.dispatch(setUserAuthenticated(response.data.token));
-    })
-    .catch((error) => {
-      console.error("There was an error logging in!", error);
-    });
+    );
+    return response.data;
+  } catch (error) {
+    console.error("There was an error logging in!", error);
+    throw error;
+  }
 };
 
 const handleRegister = async (email, password, fname, lname, phone) => {

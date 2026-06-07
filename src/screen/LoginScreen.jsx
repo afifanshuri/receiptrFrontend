@@ -25,15 +25,20 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { handleLogin } from "../service/authService";
 import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { setUser, setUserAuthenticated } from "../redux/slices/userSlice";
 
 const LoginScreen = () => {
     const nav = useNavigate();
+    const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const onHandleLogin = async () => {
         try {
-            await handleLogin(email, password, nav);
+            const response = await handleLogin(email, password, nav);
+            dispatch(setUser(response.user));
+            dispatch(setUserAuthenticated(response.token));
             nav("/home");
         } catch (error) {
             toast.error("Login failed. Please try again.");

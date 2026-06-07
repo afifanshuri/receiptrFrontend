@@ -21,31 +21,24 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-import { Button } from "@/components/ui/button"
-import axios from "axios";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser, setUserAuthenticated } from "../redux/slices/userSlice";
+import { handleLogin } from "../service/authService";
+import { toast } from "sonner";
 
 const LoginScreen = () => {
     const nav = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const dispatch = useDispatch();
 
-    const handleLogin = async () => {
-        await axios.post("http://localhost:8080/api/auth/authenticate", {
-            email: email,
-            password: password
-        }, { withCredentials: true }).then(response => {
-            dispatch(setUser(response.data.user));
-            dispatch(setUserAuthenticated(response.data.token));
+    const onHandleLogin = async () => {
+        try {
+            await handleLogin(email, password, nav);
             nav("/home");
-            console.log("User after login:", response.data.user);
-            console.log("Token after login:", response.data.token);
-        }).catch(error => {
+        } catch (error) {
+            toast.error("Login failed. Please try again.");
             console.error("There was an error logging in!", error);
-        });
+        }
     }
 
     return (
@@ -67,7 +60,7 @@ const LoginScreen = () => {
                     </FieldSet>
                 </CardContent>
                 <CardFooter className="loginFooter">
-                    <Button className="clickableButton" id="loginButton" onClick={() => { handleLogin() }}>Log In</Button>
+                    <Button className="clickableButton" id="loginButton" onClick={() => { onHandleLogin() }}>Log In</Button>
                 </CardFooter>
             </Card>
         </div>

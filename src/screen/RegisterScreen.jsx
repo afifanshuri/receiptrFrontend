@@ -17,6 +17,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner";
+import { handleRegister } from "../service/authService";
 
 const RegisterScreen = () => {
     const nav = useNavigate();
@@ -26,25 +27,18 @@ const RegisterScreen = () => {
     const [lname, setLname] = useState('');
     const [phone, setPhone] = useState('');
 
-    const handleLogin = () => {
-        console.log("Login button clicked" + email + " " + password);
-        axios.post("http://localhost:8080/api/auth/register", {
-            email: email,
-            password: password,
-            firstName: fname,
-            lastName: lname,
-            phoneNumber: phone
-        }).then(response => {
-            if (response.data.statusCode === "DUPLICATE") {
+    const onHandleRegister = () => {
+        try {
+            const response = handleRegister(email, password, fname, lname, phone);
+            if (response.statusCode === "DUPLICATE") {
                 toast.error("Email already exists. Please use a different email.");
             } else {
-                console.log("Registration successful:", response.data);
+                toast.success("Registration successful! Please log in.");
                 nav("/login");
             }
-        }).catch(error => {
-            console.error("There was an error during registration!", error);
+        } catch (error) {
             toast.error("Registration failed. Please try again.");
-        });
+        }
     }
 
 
@@ -57,19 +51,19 @@ const RegisterScreen = () => {
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input id="email" autoComplete="off" placeholder="user@mail.com" type="email" onChange={(e) => setEmail(e.target.value)} />
+                                <Input id="email" required autoComplete="off" placeholder="user@mail.com" type="email" onChange={(e) => setEmail(e.target.value)} />
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="password">Password</FieldLabel>
-                                <Input id="password" autoComplete="off" type="password" onChange={(e) => setPassword(e.target.value)} />
+                                <Input id="password" required autoComplete="off" type="password" onChange={(e) => setPassword(e.target.value)} />
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="fname">First Name</FieldLabel>
-                                <Input id="fname" autoComplete="off" type="text" onChange={(e) => setFname(e.target.value)} />
+                                <Input id="fname" required autoComplete="off" type="text" onChange={(e) => setFname(e.target.value)} />
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="lname">Last Name</FieldLabel>
-                                <Input id="lname" autoComplete="off" type="text" onChange={(e) => setLname(e.target.value)} />
+                                <Input id="lname" required autoComplete="off" type="text" onChange={(e) => setLname(e.target.value)} />
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
@@ -79,7 +73,7 @@ const RegisterScreen = () => {
                     </FieldSet>
                 </CardContent>
                 <CardFooter className="loginFooter">
-                    <Button id="loginButton" onClick={() => { handleLogin() }}>Register</Button>
+                    <Button id="loginButton" onClick={() => { onHandleRegister() }}>Register</Button>
                 </CardFooter>
             </Card>
         </div>

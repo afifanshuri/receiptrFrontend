@@ -1,13 +1,14 @@
 import axios from "axios";
 import store from "../redux/store";
 import { refreshAccessToken } from "./authService";
+import API_URL from "../constants/constants";
 import {
   setUserAuthenticated,
   setUserNotAuthenticated,
 } from "../redux/slices/userSlice";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: `${API_URL}/api`,
 });
 
 axiosInstance.interceptors.request.use((config) => {

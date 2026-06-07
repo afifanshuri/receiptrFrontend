@@ -21,29 +21,30 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { handleLogin } from "../service/authService";
-import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { setUser, setUserAuthenticated } from "../redux/slices/userSlice";
+import API_URL from "../constants/constants";
 
 const LoginScreen = () => {
     const nav = useNavigate();
-    const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const dispatch = useDispatch();
 
-    const onHandleLogin = async () => {
-        try {
-            const response = await handleLogin(email, password, nav);
-            dispatch(setUser(response.user));
-            dispatch(setUserAuthenticated(response.token));
+    const handleLogin = async () => {
+        await axios.post(`${API_URL}/api/auth/authenticate`, {
+            email: email,
+            password: password
+        }, { withCredentials: true }).then(response => {
+            dispatch(setUser(response.data.user));
+            dispatch(setUserAuthenticated(response.data.token));
             nav("/home");
-        } catch (error) {
-            toast.error("Login failed. Please try again.");
+        }).catch(error => {
             console.error("There was an error logging in!", error);
-        }
+        });
     }
 
     return (
@@ -65,7 +66,7 @@ const LoginScreen = () => {
                     </FieldSet>
                 </CardContent>
                 <CardFooter className="loginFooter">
-                    <Button className="clickableButton" id="loginButton" onClick={() => { onHandleLogin() }}>Log In</Button>
+                    <Button className="clickableButton" id="loginButton" onClick={() => { handleLogin() }}>Log In</Button>
                 </CardFooter>
             </Card>
         </div>

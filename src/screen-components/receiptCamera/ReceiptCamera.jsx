@@ -73,7 +73,7 @@ const ReceiptCamera = () => {
 
     return (
         <div id="cameraContainer">
-            <Webcam id="camera" screenshotFormat="image/jpeg" ref={cameraRef}>
+            <Webcam id="camera" screenshotFormat="image/jpeg" ref={cameraRef} videoConstraints={{ facingMode: "environment" }} onUserMediaError={() => toast.error("Unable to access camera. Please allow camera permissions and try again.")}>
                 {() => { return }}
             </Webcam>
 

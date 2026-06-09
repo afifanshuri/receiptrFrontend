@@ -9,6 +9,7 @@ const refreshAccessToken = async () => {
       {},
       { withCredentials: true },
     );
+    console.log("Refresh response:", response);
     return response.data.token;
   } catch (error) {
     console.error(

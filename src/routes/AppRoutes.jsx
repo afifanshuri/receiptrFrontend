@@ -26,7 +26,12 @@ const AppRoutes = () => {
 }
 
 const ProtectedRoute = ({ children }) => {
-    const isUserAuthenticated = useSelector((state) => state.user.isAuthenticated === true);
+    const isUserAuthenticated = useSelector((state) => state.user.isAuthenticated);
+
+    if (isUserAuthenticated === null) {
+        return null;
+    }
+
     if (!isUserAuthenticated) {
         return <Navigate to="/" replace />;
     }

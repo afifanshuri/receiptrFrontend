@@ -31,6 +31,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       const token = await refreshAccessToken();
+      console.log("Refresh triggered after logout", token);
       if (token !== null) {
         store.dispatch(setUserAuthenticated(token));
         originalRequest.headers.Authorization = `Bearer ${token}`;

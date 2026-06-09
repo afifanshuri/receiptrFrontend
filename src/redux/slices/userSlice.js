@@ -37,6 +37,7 @@ export const userSlice = createSlice({
       state.profile.lastName = null;
       state.profile.email = null;
       state.accessToken = null;
+      state.accessToken = null;
       state.refreshToken = null;
       state.isAuthenticated = false;
       state.isFirstLogin = false;

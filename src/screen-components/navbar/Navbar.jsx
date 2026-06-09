@@ -40,11 +40,18 @@ const Navbar = () => {
     }
 
     const onLogout = async () => {
-        dispatch(resetUser());
-        await persistor.purge();
-        await onHandleLogOut();
-        nav("/");
-    }
+        try {
+            await onHandleLogOut();
+            dispatch(resetUser());
+            await persistor.purge();
+            nav("/", { replace: true });
+        } catch (error) {
+            console.error("Logout failed:", error);
+            dispatch(resetUser());
+            await persistor.purge();
+            nav("/", { replace: true });
+        }
+    };
 
     return (
         <div id="navbarContainer">

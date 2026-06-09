@@ -1,8 +1,6 @@
 import axios from "axios";
 import axiosInstance from "./axiosService";
-import store from "../redux/store";
 import API_URL from "../constants/constants";
-import { setUserNotAuthenticated } from "../redux/slices/userSlice";
 
 const refreshAccessToken = async () => {
   try {
@@ -17,11 +15,7 @@ const refreshAccessToken = async () => {
       "Your session encountered some error. Please log in again",
       error,
     );
-    store.dispatch(setUserNotAuthenticated);
-    if (window.location.pathname !== "/") {
-      window.location.href = "/";
-    }
-    return null;
+    throw error;
   }
 };
 

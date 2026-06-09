@@ -5,38 +5,46 @@ import ReceiptDashboard from "./screen/ReceiptDashboard"
 import Navbar from "./screen-components/navbar/Navbar"
 import ReceiptDisplay from "./screen-components/receiptDisplay/ReceiptDisplay"
 import AppRoutes from "./routes/AppRoutes"
-import axios from "axios"
 import { Toaster } from "sonner"
-import { Provider } from "react-redux"
-import store, { persistor } from "./redux/store"
+import { Provider, useDispatch } from "react-redux"
 import { PersistGate } from "redux-persist/integration/react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { refreshAccessToken } from "./service/authService"
+import { Spinner } from "@/components/ui/spinner"
+import { setUserAuthenticated, setUserNotAuthenticated } from "./redux/slices/userSlice"
 
 function App() {
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const checkAuthentication = async () => {
+    const initAuth = async () => {
       try {
-        const response = await refreshAccessToken();
-        console.log("Authentication check response:", response.data);
-      } catch (error) {
-        console.error("Error during authentication check:", error);
+        const token = await refreshAccessToken();
+        if (token) {
+          dispatch(setUserAuthenticated(token));
+        } else {
+          dispatch(setUserNotAuthenticated());
+        }
+      } catch (err) {
+        dispatch(setUserNotAuthenticated());
+      } finally {
+        setLoading(false);
       }
     };
 
-    checkAuthentication();
+    initAuth();
   }, []);
+
+  if (loading) {
+    return <div style={{ textAlign: "center" }}><Spinner /> Loading...</div>;
+  }
 
   return (
     <>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <Navbar />
-          <AppRoutes />
-          <Toaster richColors position="bottom-right" />
-        </PersistGate>
-      </Provider>
+      <Navbar />
+      <AppRoutes />
+      <Toaster richColors position="bottom-right" />
     </>
   )
 }
